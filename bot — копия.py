@@ -1,7 +1,6 @@
 """
 Telegram бот для генерации аудио
 Направления: EN→RU, EN→UK
-Обновлённая версия с упрощённым интерфейсом
 """
 
 import io
@@ -26,7 +25,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Получаем токен из переменной окружения
+# Получаем токен из переменной окружения (для безопасности)
 BOT_TOKEN = os.environ.get('BOT_TOKEN', '8586424822:AAHOvZlko-7_xV9Kc_mL96RsG61RDm0kfHQ')
 
 # Настройки по умолчанию для каждого пользователя
@@ -35,23 +34,25 @@ user_settings = {}
 DEFAULT_SETTINGS = {
     'repeat_count': 3,
     'pause_ms': 500,
-    'direction': 'en-ru'
+    'direction': 'en-ru'  # По умолчанию EN→RU
 }
 
 # Доступные направления перевода
 TRANSLATION_DIRECTIONS = {
     'en-ru': {
-        'name': 'English → Русский',
+        'name': '🇬🇧 English → 🇷🇺 Русский',
         'source': 'en',
         'target': 'ru',
-        'label': 'Vocabulary',
+        'flag_source': '🇬🇧',
+        'flag_target': '🇷🇺',
         'example': 'apple - яблоко\ncat - кот\nbook - книга'
     },
     'en-uk': {
-        'name': 'English → Українська',
+        'name': '🇬🇧 English → 🇺🇦 Українська',
         'source': 'en',
         'target': 'uk',
-        'label': 'Vocabulary',
+        'flag_source': '🇬🇧',
+        'flag_target': '🇺🇦',
         'example': 'apple - яблуко\ncat - кіт\nbook - книга'
     }
 }
@@ -134,17 +135,21 @@ def create_audio(pairs, settings, direction='en-ru'):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Команда /start"""
     keyboard = [
-        [InlineKeyboardButton("English → Русский", callback_data='dir_en-ru')],
-        [InlineKeyboardButton("English → Українська", callback_data='dir_en-uk')]
+        [InlineKeyboardButton("🇬🇧 English → 🇷🇺 Русский", callback_data='dir_en-ru')],
+        [InlineKeyboardButton("🇬🇧 English → 🇺🇦 Українська", callback_data='dir_en-uk')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     welcome_text = """
-🎧 <b>Добро пожаловать!</b>
+🎧 <b>Вітаю! Welcome! Привет!</b>
 
-Я создаю аудио для изучения английских слов.
+Я створюю аудіо для вивчення англійських слів!
+I create audio for learning English words!
+Я создаю аудио для изучения английских слов!
 
-<b>Выберите язык перевода:</b>
+<b>📚 Оберіть напрямок перекладу:</b>
+<b>📚 Choose translation direction:</b>
+<b>📚 Выберите направление перевода:</b>
 """
     await update.message.reply_text(
         welcome_text,
@@ -166,8 +171,9 @@ async def direction_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     dir_info = TRANSLATION_DIRECTIONS[direction]
 
-    # Текст на русском для обоих направлений
-    instruction_text = f"""
+    # Разные тексты для разных направлений
+    if direction == 'en-ru':
+        instruction_text = f"""
 ✅ <b>Выбрано направление:</b>
 {dir_info['name']}
 
@@ -178,9 +184,25 @@ async def direction_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 Я создам MP3 файл, где:
 • Английское слово × {settings['repeat_count']} раза
-• Перевод × 1 раз
+• Русский перевод × 1 раз
 
 🎵 <b>Отправьте слова и получите аудио!</b>
+"""
+    else:  # en-uk
+        instruction_text = f"""
+✅ <b>Обрано напрямок:</b>
+{dir_info['name']}
+
+📝 <b>Як використовувати:</b>
+Надішліть список слів у форматі:
+
+<code>{dir_info['example']}</code>
+
+Я створю MP3 файл, де:
+• Англійське слово × {settings['repeat_count']} рази
+• Український переклад × 1 раз
+
+🎵 <b>Надішліть слова і отримайте аудіо!</b>
 """
 
     await query.edit_message_text(
@@ -198,11 +220,11 @@ async def settings_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
         [InlineKeyboardButton(
-            f"🌍 Направление: {dir_info['name']}",
+            f"🌍 Напрямок: {dir_info['flag_source']}→{dir_info['flag_target']}",
             callback_data='change_direction'
         )],
         [InlineKeyboardButton(
-            f"🔁 Повторений: {settings['repeat_count']}",
+            f"🔁 Повторення: {settings['repeat_count']}",
             callback_data='change_repeat'
         )],
         [InlineKeyboardButton(
@@ -213,8 +235,10 @@ async def settings_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     settings_text = """
-⚙️ <b>Настройки</b>
+⚙️ <b>Налаштування / Settings / Настройки</b>
 
+Оберіть параметр для зміни:
+Choose parameter to change:
 Выберите параметр для изменения:
 """
 
@@ -234,13 +258,13 @@ async def settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if query.data == 'change_direction':
         keyboard = [
-            [InlineKeyboardButton("English → Русский", callback_data='dir_en-ru')],
-            [InlineKeyboardButton("English → Українська", callback_data='dir_en-uk')],
-            [InlineKeyboardButton("« Назад", callback_data='back_settings')]
+            [InlineKeyboardButton("🇬🇧 → 🇷🇺 English → Русский", callback_data='dir_en-ru')],
+            [InlineKeyboardButton("🇬🇧 → 🇺🇦 English → Українська", callback_data='dir_en-uk')],
+            [InlineKeyboardButton("« Назад / Back", callback_data='back_settings')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(
-            "🌍 Выберите направление перевода:",
+            "🌍 Оберіть напрямок / Choose direction:",
             reply_markup=reply_markup
         )
 
@@ -252,11 +276,11 @@ async def settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("4", callback_data='repeat_4'),
              InlineKeyboardButton("5", callback_data='repeat_5'),
              InlineKeyboardButton("7", callback_data='repeat_7')],
-            [InlineKeyboardButton("« Назад", callback_data='back_settings')]
+            [InlineKeyboardButton("« Назад / Back", callback_data='back_settings')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(
-            "🔁 Сколько раз повторять английское слово?",
+            "🔁 Скільки разів повторювати?\nHow many times to repeat?\nСколько раз повторять?",
             reply_markup=reply_markup
         )
 
@@ -267,11 +291,11 @@ async def settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
              InlineKeyboardButton("800мс", callback_data='pause_800')],
             [InlineKeyboardButton("1000мс", callback_data='pause_1000'),
              InlineKeyboardButton("1500мс", callback_data='pause_1500')],
-            [InlineKeyboardButton("« Назад", callback_data='back_settings')]
+            [InlineKeyboardButton("« Назад / Back", callback_data='back_settings')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.edit_message_text(
-            "⏱️ Пауза между словами:",
+            "⏱️ Пауза між словами:\nPause between words:\nПауза между словами:",
             reply_markup=reply_markup
         )
 
@@ -279,14 +303,14 @@ async def settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         count = int(query.data.split('_')[1])
         settings['repeat_count'] = count
         await query.edit_message_text(
-            f"✅ Установлено: {count}× повторений"
+            f"✅ Встановлено / Set / Установлено: {count}× повторень / repeats / повторений"
         )
 
     elif query.data.startswith('pause_'):
         pause = int(query.data.split('_')[1])
         settings['pause_ms'] = pause
         await query.edit_message_text(
-            f"✅ Установлено: {pause}мс пауза"
+            f"✅ Встановлено / Set / Установлено: {pause}мс пауза / pause / пауза"
         )
 
     elif query.data == 'back_settings':
@@ -303,9 +327,9 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not pairs:
         await update.message.reply_text(
-            "❌ Не найдено пар слов.\n\n"
-            "Используйте формат:\n"
-            "<code>apple - яблоко\ncat - кот</code>",
+            "❌ Не знайдено пар слів / No word pairs found / Не найдено пар слов\n\n"
+            "Формат / Format:\n"
+            "<code>apple - яблуко\ncat - кіт</code>",
             parse_mode='HTML'
         )
         return
@@ -315,34 +339,33 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Отправка статуса
     status_msg = await update.message.reply_text(
-        f"🎙️ Создаю аудио...\n\n"
-        f"📊 Пар слов: {len(pairs)}\n"
+        f"🎙️ Створюю аудіо / Creating audio / Создаю аудио...\n\n"
+        f"📊 Пар слів / Pairs / Пар слов: {len(pairs)}\n"
         f"🌍 {dir_info['name']}\n"
-        f"🔁 Повторений: {settings['repeat_count']}×"
+        f"🔁 Повторень / Repeats / Повторений: {settings['repeat_count']}×"
     )
 
     try:
         # Создание аудио
         audio_file = create_audio(pairs, settings, direction)
 
-        # Формирование текста с парами слов (БЕЗ флагов, только Vocabulary)
+        # Формирование текста с парами слов
         words_text = f"📚 <b>Your words. Let's get started!</b>\n\n"
         for i, pair in enumerate(pairs, 1):
-            words_text += f"{i}. <b>{pair['source']}</b> — {pair['target']}\n"
+            words_text += f"{i}. <b>{pair['source']}</b> {dir_info['flag_source']}→{dir_info['flag_target']} {pair['target']}\n"
 
-            words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
-            words_text += f"<b>Sincerely yours, LinguaBird❤️</b>"
+        words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
+        words_text += f"<b>Sincerely yours, LinguaBird❤️"
 
         # Удаление статусного сообщения
         await status_msg.delete()
 
-        # Отправка аудио с duration для автоостановки
-        filename = f"english_words_{dir_info['target']}.mp3"
-
+        # Отправка аудио и текста
+        filename = f"english_to_{dir_info['target']}.mp3"
         await update.message.reply_audio(
             audio=audio_file,
             filename=filename,
-            title=dir_info['label'],
+            title=f"{dir_info['flag_source']} English → {dir_info['flag_target']} {dir_info['target'].upper()}",
             performer="English Learning Bot",
             caption=words_text,
             parse_mode='HTML'
@@ -351,34 +374,35 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Error creating audio: {e}")
         await status_msg.edit_text(
-            f"❌ Ошибка при создании аудио:\n{str(e)}\n\n"
-            f"Попробуйте снова: /start"
+            f"❌ Error:\n{str(e)}\n\n"
+            f"Try again: /start"
         )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Команда /help"""
     help_text = """
-📖 <b>Справка</b>
+📖 <b>Help</b>
 
-<b>Команды:</b>
-/start - Начать работу
-/settings - Настройки
-/help - Справка
+<b>Commands:</b>
+/start - Start
+/settings - Settings
+/help - Help
 
-<b>Как использовать:</b>
+<b>Як використовувати / How to use / Как использовать:</b>
 
-1. Выберите направление перевода
-2. Отправьте слова в формате:
+1️⃣ Choose translation direction
 
-<code>apple - яблоко
-cat - кот
+2️⃣ Send words in format:
+
+<code>apple - яблуко
+cat - кіт
 dog - собака</code>
 
-3. Получите MP3 аудио!
+3️⃣ Get MP3 audio!
 
-<b>Поддерживаемые направления:</b>
-• English → Русский
-• English → Українська
+<b>Available directions:</b>
+🇬🇧 → 🇷🇺 English → Русский
+🇬🇧 → 🇺🇦 English → Українська
 """
     await update.message.reply_text(help_text, parse_mode='HTML')
 
@@ -390,16 +414,16 @@ async def example_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     dir_info = TRANSLATION_DIRECTIONS[direction]
 
     example_text = f"""
-📝 <b>Пример</b>
+📝 <b>Example</b>
 
-<b>Текущее направление:</b>
+<b>Current direction:</b>
 {dir_info['name']}
 
-<b>Отправьте такой текст:</b>
+<b>Send this text:</b>
 
 <code>{dir_info['example']}</code>
 
-И я создам аудио! 🎵
+I'll create audio! 🎵
 """
     await update.message.reply_text(example_text, parse_mode='HTML')
 
@@ -414,6 +438,8 @@ def main():
         print("\n❌ ОШИБКА: Токен не настроен!")
         print("Установите переменную окружения BOT_TOKEN")
         print("или измените строку в коде")
+        print("\nExport: export BOT_TOKEN='ваш_токен'")
+        print("или в коде: BOT_TOKEN = 'ваш_токен'")
         return
 
     # Создание приложения
@@ -435,8 +461,8 @@ def main():
     # Запуск бота
     print("\n✅ Бот успешно запущен!")
     print("📱 Доступные направления:")
-    print("   • English → Русский")
-    print("   • English → Українська")
+    print("   🇬🇧 → 🇷🇺 English → Русский")
+    print("   🇬🇧 → 🇺🇦 English → Українська")
     print("\n⏹️  Для остановки нажмите Ctrl+C")
     print("=" * 60 + "\n")
 
@@ -444,3 +470,14 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+    8586424822:AAHOvZlko-7_xV9Kc_mL96RsG61RDm0kfHQ
+    git config --global user.name "Pavel"
+    git config --global user.email "Mailovavel@gmail.com"
+    git remote add origin https://github.com/Avelrank/TelegramWordBot.git
+    pyaudioop-lts==0.2.1.post1
+
+    git add .
+    git commit -m "Correcting an outgoing message"
+    git push origin main
