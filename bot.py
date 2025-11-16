@@ -354,8 +354,8 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for i, pair in enumerate(pairs, 1):
             words_text += f"{i}. <b>{pair['source']}</b> {dir_info['flag_source']}→{dir_info['flag_target']} {pair['target']}\n"
 
-        words_text += f"\n🔊 <b>You're getting better every day!</b>\n"
-        words_text += f"Sincerely yours, LinguaBird"
+        words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
+        words_text += f"Sincerely yours, LinguaBird❤️"
 
         # Удаление статусного сообщения
         await status_msg.delete()
@@ -374,39 +374,33 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.error(f"Error creating audio: {e}")
         await status_msg.edit_text(
-            f"❌ Помилка / Error / Ошибка:\n{str(e)}\n\n"
-            f"Спробуйте ще раз / Try again / Попробуйте снова: /start"
+            f"❌ Error:\n{str(e)}\n\n"
+            f"Try again: /start"
         )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Команда /help"""
     help_text = """
-📖 <b>Довідка / Help / Справка</b>
+📖 <b>Help</b>
 
-<b>Команди / Commands / Команды:</b>
-/start - Почати / Start / Начать
-/settings - Налаштування / Settings / Настройки
-/help - Допомога / Help / Помощь
+<b>Commands:</b>
+/start - Start
+/settings - Settings
+/help - Help
 
 <b>Як використовувати / How to use / Как использовать:</b>
 
-1️⃣ Оберіть напрямок перекладу
-   Choose translation direction
-   Выберите направление перевода
+1️⃣ Choose translation direction
 
-2️⃣ Надішліть слова у форматі:
-   Send words in format:
-   Отправьте слова в формате:
+2️⃣ Send words in format:
 
 <code>apple - яблуко
 cat - кіт
 dog - собака</code>
 
-3️⃣ Отримайте MP3 аудіо!
-   Get MP3 audio!
-   Получите MP3 аудио!
+3️⃣ Get MP3 audio!
 
-<b>Доступні напрямки / Available directions:</b>
+<b>Available directions:</b>
 🇬🇧 → 🇷🇺 English → Русский
 🇬🇧 → 🇺🇦 English → Українська
 """
@@ -420,20 +414,16 @@ async def example_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     dir_info = TRANSLATION_DIRECTIONS[direction]
 
     example_text = f"""
-📝 <b>Приклад / Example / Пример</b>
+📝 <b>Example</b>
 
-<b>Поточний напрямок / Current direction:</b>
+<b>Current direction:</b>
 {dir_info['name']}
 
-<b>Надішліть такий текст:</b>
 <b>Send this text:</b>
-<b>Отправьте такой текст:</b>
 
 <code>{dir_info['example']}</code>
 
-Я створю аудіо! 🎵
 I'll create audio! 🎵
-Я создам аудио! 🎵
 """
     await update.message.reply_text(example_text, parse_mode='HTML')
 
