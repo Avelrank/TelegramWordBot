@@ -478,6 +478,6 @@ if __name__ == '__main__':
     git remote add origin https://github.com/Avelrank/TelegramWordBot.git
     pyaudioop-lts==0.2.1.post1
 
-    git add .
-    git commit -m "Correcting an outgoing message"
-    git push origin main
+git add bot.py
+git commit -m "Update-bot"
+git push origin main
