@@ -350,14 +350,12 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
         audio_file = create_audio(pairs, settings, direction)
 
         # Формирование текста с парами слов
-        words_text = f"📚 <b>Ваші слова / Your words / Ваши слова:</b>\n\n"
+        words_text = f"📚 <b>Your words. Let's get started!</b>\n\n"
         for i, pair in enumerate(pairs, 1):
             words_text += f"{i}. <b>{pair['source']}</b> {dir_info['flag_source']}→{dir_info['flag_target']} {pair['target']}\n"
 
-        words_text += f"\n🔊 <b>Аудіо готове! / Audio ready! / Аудио готово!</b>\n"
-        words_text += f"🌍 {dir_info['name']}\n"
-        words_text += f"🔁 {settings['repeat_count']}× повторень / repeats / повторений\n"
-        words_text += f"⏱️ {settings['pause_ms']}мс пауза / pause / пауза"
+        words_text += f"\n🔊 <b>You're getting better every day!</b>\n"
+        words_text += f"Sincerely yours, LinguaBird"
 
         # Удаление статусного сообщения
         await status_msg.delete()
@@ -477,7 +475,7 @@ def main():
     print("   🇬🇧 → 🇺🇦 English → Українська")
     print("\n⏹️  Для остановки нажмите Ctrl+C")
     print("=" * 60 + "\n")
-    
+
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
