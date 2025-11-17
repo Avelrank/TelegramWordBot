@@ -321,19 +321,19 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🔁 Повторений: {settings['repeat_count']}×"
     )
 
-    try:
-        # Создание аудио
-        audio_file = create_audio(pairs, settings, direction)
+try:
+    # Создание аудио
+    audio_file = create_audio(pairs, settings, direction)
 
-        # Формирование текста с парами слов (БЕЗ флагов, только Vocabulary)
-        words_text = f"📚 <b>Your words. Let's get started!</b>\n\n"
-        for i, pair in enumerate(pairs, 1):
-            words_text += f"{i}. <b>{pair['source']}</b> — {pair['target']}\n"
+    # Формирование текста с парами слов
+    words_text = "📚 <b>Your words. Let's get started!</b>\n\n"
 
-        words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
-        words_text += f"<b>Sincerely yours, LinguaBird!</b>"
+    for i, pair in enumerate(pairs, 1):
+        words_text += f"{i}. <b>{pair['source']}</b> — {pair['target']}\n"
 
->Sincerely yours, LinguaBird!
+    words_text += "\n🫶🏼 <b>You're getting better every day!</b>\n"
+    words_text += "<b>Sincerely yours, LinguaBird!</b>"
+
         # Удаление статусного сообщения
         await status_msg.delete()
 
