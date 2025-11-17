@@ -334,7 +334,7 @@ try:
     words_text += "\n🫶🏼 <b>You're getting better every day!</b>\n"
     words_text += "<b>Sincerely yours, LinguaBird!</b>"
 
-        # Удаление статусного сообщения
+    # Удаление статусного сообщения
         await status_msg.delete()
 
         # Отправка аудио с duration для автоостановки
