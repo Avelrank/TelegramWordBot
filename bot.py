@@ -44,14 +44,14 @@ TRANSLATION_DIRECTIONS = {
         'name': 'English → Русский',
         'source': 'en',
         'target': 'ru',
-        'label': 'Vocabulary',
+        'label': 'VOCABULARY',
         'example': 'apple - яблоко\ncat - кот\nbook - книга'
     },
     'en-uk': {
         'name': 'English → Українська',
         'source': 'en',
         'target': 'uk',
-        'label': 'Vocabulary',
+        'label': 'VOCABULARY',
         'example': 'apple - яблуко\ncat - кіт\nbook - книга'
     }
 }
@@ -326,12 +326,12 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
         audio_file = create_audio(pairs, settings, direction)
 
         # Формирование текста с парами слов (БЕЗ флагов, только Vocabulary)
-        words_text = f"📚 <b>Ваші слова / Your words:</b>\n\n"
+        words_text = f"📚 <b>Your words. Let's get started!</b>\n\n"
         for i, pair in enumerate(pairs, 1):
             words_text += f"{i}. <b>{pair['source']}</b> — {pair['target']}\n"
 
         words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
-        words_text += f"<b>Sincerely yours, LinguaBird❤️</b>"
+        words_text += f"Sincerely yours, LinguaBird"
 
         # Удаление статусного сообщения
         await status_msg.delete()
