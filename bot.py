@@ -330,9 +330,10 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for i, pair in enumerate(pairs, 1):
             words_text += f"{i}. <b>{pair['source']}</b> — {pair['target']}\n"
 
-            words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
-            words_text += f"<b>Sincerely yours, LinguaBird❤️</b>"
+        words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
+        words_text += f"<b>Sincerely yours, LinguaBird!</b>"
 
+>Sincerely yours, LinguaBird!
         # Удаление статусного сообщения
         await status_msg.delete()
 
