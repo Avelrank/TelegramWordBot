@@ -326,12 +326,12 @@ async def process_words(update: Update, context: ContextTypes.DEFAULT_TYPE):
         audio_file = create_audio(pairs, settings, direction)
 
         # Формирование текста с парами слов (БЕЗ флагов, только Vocabulary)
-        words_text = f"📚 <b>Your words. Let's get started!</b>\n\n"
+        words_text = f"📚 <b><i>Your words. Let's get started!</i></b>\n\n"
         for i, pair in enumerate(pairs, 1):
             words_text += f"{i}. <b>{pair['source']}</b> — {pair['target']}\n"
 
-        words_text += f"\n🫶🏼 <b>You're getting better every day!</b>\n"
-        words_text += f"Sincerely yours, LinguaBird"
+        words_text += f"\n🫶🏼 <b><i>You're getting better every day!</i></b>\n"
+        words_text += f"<i>Sincerely yours, LinguaBird.</i>"
 
         # Удаление статусного сообщения
         await status_msg.delete()
